@@ -1,0 +1,5 @@
+{
+  "name": "Conversational Simulations Platform",
+  "description": "A React application allowing users to simulate conversations with AI-powered personas for practice and learning. This version focuses on the core chat interface and persona selection.",
+  "requestFramePermissions": []
+}

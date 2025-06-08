@@ -1,0 +1,6 @@
+This directory is intended for database-related files.
+
+Future components:
+- Prisma schema (schema.prisma).
+- Database migration files.
+- Seed scripts for initial data.

@@ -1,0 +1,6 @@
+This directory is intended for the backend server code (e.g., Node.js with Express/Fastify).
+
+Future components:
+- API endpoints for simulations, user data, etc.
+- Authentication logic.
+- Interaction with the database.
