@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Conversational Simulations Platform
 
 A platform for users to engage in simulated conversations with AI-powered personas for soft skill practice, idea exploration, and training.
@@ -102,3 +103,6 @@ Details on how to contribute will be added soon.
 ## License
 
 This project is licensed under the MIT License - see the LICENSE.md file (if available) for details.
+=======
+# Conversational-Simulations-Platform
+>>>>>>> a79dd99a3d5613a005ea061d4d44234dd13b9297
