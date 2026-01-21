@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: test-aks-app
-        image: test-aks-app:latest
+        image: testaksdevacr2v42ec.azurecr.io/test-aks-app:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
