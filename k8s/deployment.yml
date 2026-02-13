@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: test-aks-app
-        image: testaksdevacr2v42ec.azurecr.io/test-aks-app:latest
+        image: testaksdevacrwdd82k.azurecr.io/test-aks-app:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -71,4 +71,50 @@ spec:
     protocol: TCP
     name: http
   sessionAffinity: ClientIP
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: test-aks-app-hpa
+  labels:
+    app: test-aks-app
+    environment: dev
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: test-aks-app
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      selectPolicy: Max
 ---
