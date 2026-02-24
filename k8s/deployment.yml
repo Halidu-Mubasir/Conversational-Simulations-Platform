@@ -1,24 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: test-aks-app
+  name: my-test-app
   labels:
-    app: test-aks-app
+    app: my-test-app
     environment: dev
 spec:
   replicas: 1
+  progressDeadlineSeconds: 600
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
-      app: test-aks-app
+      app: my-test-app
   template:
     metadata:
       labels:
-        app: test-aks-app
+        app: my-test-app
         environment: dev
     spec:
       containers:
-      - name: test-aks-app
-        image: testaksdevacrwdd82k.azurecr.io/test-aks-app:latest
+      - name: my-test-app
+        image: testappdevacre42qrh.azurecr.io/my-test-app:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
@@ -36,11 +43,18 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "100m"
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
         livenessProbe:
           httpGet:
             path: /health
             port: 8080
-          initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
@@ -48,7 +62,6 @@ spec:
           httpGet:
             path: /ready
             port: 8080
-          initialDelaySeconds: 30
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
@@ -57,14 +70,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: test-aks-app
+  name: my-test-app
   labels:
-    app: test-aks-app
+    app: my-test-app
     environment: dev
 spec:
   type: LoadBalancer
   selector:
-    app: test-aks-app
+    app: my-test-app
   ports:
   - port: 80
     targetPort: 8080
@@ -76,15 +89,15 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: test-aks-app-hpa
+  name: my-test-app-hpa
   labels:
-    app: test-aks-app
+    app: my-test-app
     environment: dev
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: test-aks-app
+    name: my-test-app
   minReplicas: 2
   maxReplicas: 10
   metrics:
