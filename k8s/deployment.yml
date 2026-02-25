@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: my-test-app
-        image: testappdevacrs9vh3e.azurecr.io/my-test-app:latest
+        image: testappdevacrp3rcyy.azurecr.io/my-test-app:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
