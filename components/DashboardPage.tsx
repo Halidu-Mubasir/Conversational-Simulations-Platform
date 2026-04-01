@@ -3,12 +3,14 @@ import React, { useState, useMemo } from 'react';
 import { PERSONAS } from '../constants';
 import PersonaCard from './PersonaCard';
 import { SparklesIcon } from './icons/SparklesIcon';
-import { SearchIcon } from './icons/SearchIcon'; // New Icon
-import { FilterIcon } from './icons/FilterIcon'; // New Icon
+import { SearchIcon } from './icons/SearchIcon';
+import { FilterIcon } from './icons/FilterIcon';
 import { Persona } from '../types';
+import { useDebounce } from '../hooks/useDebounce';
 
 const DashboardPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
 
@@ -21,18 +23,18 @@ const DashboardPage: React.FC = () => {
 
   const filteredPersonas = useMemo(() => {
     return PERSONAS.filter(persona => {
-      const matchesSearchTerm = searchTerm.toLowerCase() === '' ||
-        persona.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        persona.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        persona.scenario.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        persona.category.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearchTerm = debouncedSearchTerm.toLowerCase() === '' ||
+        persona.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        persona.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        persona.scenario.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        persona.category.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
 
       const matchesDifficulty = selectedDifficulty === '' || persona.difficulty === selectedDifficulty;
       const matchesCategory = selectedCategory === '' || persona.category === selectedCategory;
 
       return matchesSearchTerm && matchesDifficulty && matchesCategory;
     });
-  }, [searchTerm, selectedDifficulty, selectedCategory]);
+  }, [debouncedSearchTerm, selectedDifficulty, selectedCategory]);
 
   return (
     <div className="space-y-8">

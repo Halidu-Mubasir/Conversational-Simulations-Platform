@@ -1,11 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
-// Fix: Changed import to namespace import for react-router-dom
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
-import DashboardPage from './components/DashboardPage';
-import SimulationPage from './components/SimulationPage';
 import { APP_TITLE } from './constants';
-import { SunIcon, MoonIcon } from './components/icons/ThemeIcons'; 
+import { SunIcon, MoonIcon } from './components/icons/ThemeIcons';
+import LoadingSpinner from './components/LoadingSpinner';
+import ErrorBoundary from './components/ErrorBoundary';
+
+const DashboardPage = lazy(() => import('./components/DashboardPage'));
+const SimulationPage = lazy(() => import('./components/SimulationPage'));
 
 const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -27,32 +29,42 @@ const App: React.FC = () => {
   };
 
   return (
-    // Fix: Use ReactRouterDOM.HashRouter
     <ReactRouterDOM.HashRouter>
-      {/* The parent div with h-full and flex flex-col is now #root in index.html */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-500 focus:text-white focus:rounded-lg focus:ring-2 focus:ring-primary-500"
+      >
+        Skip to main content
+      </a>
+
       <header className="bg-white dark:bg-neutral-800 shadow-md sticky top-0 z-50">
         <nav className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Fix: Use ReactRouterDOM.Link */}
-          <ReactRouterDOM.Link to="/" className="text-2xl font-bold text-primary-600 dark:text-primary-400 hover:opacity-80 transition-opacity">
+          <ReactRouterDOM.Link
+            to="/"
+            className="text-2xl font-bold text-primary-600 dark:text-primary-400 hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary-500 rounded-md px-2 py-1"
+            aria-label="Go to homepage"
+          >
             {APP_TITLE}
           </ReactRouterDOM.Link>
           <button
             onClick={toggleDarkMode}
-            className="p-2 rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
-            aria-label="Toggle dark mode"
+            className="p-2 rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500"
+            aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {isDarkMode ? <SunIcon className="w-6 h-6 text-yellow-400" /> : <MoonIcon className="w-6 h-6 text-neutral-600" />}
           </button>
         </nav>
       </header>
       
-      {/* flex-grow ensures this section takes available space, pushing footer down */}
-      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Fix: Use ReactRouterDOM.Routes and ReactRouterDOM.Route */}
-        <ReactRouterDOM.Routes>
-          <ReactRouterDOM.Route path="/" element={<DashboardPage />} />
-          <ReactRouterDOM.Route path="/simulation/:personaId" element={<SimulationPage />} />
-        </ReactRouterDOM.Routes>
+      <main id="main-content" className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <ErrorBoundary>
+          <Suspense fallback={<div className="flex items-center justify-center h-64"><LoadingSpinner /></div>}>
+            <ReactRouterDOM.Routes>
+              <ReactRouterDOM.Route path="/" element={<DashboardPage />} />
+              <ReactRouterDOM.Route path="/simulation/:personaId" element={<SimulationPage />} />
+            </ReactRouterDOM.Routes>
+          </Suspense>
+        </ErrorBoundary>
       </main>
 
       <footer className="bg-white dark:bg-neutral-800 text-center py-4 border-t border-neutral-200 dark:border-neutral-700">
