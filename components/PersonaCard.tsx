@@ -1,33 +1,43 @@
-
-import React from 'react';
-// Fix: Changed import to namespace import for react-router-dom
+import React, { memo } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { Persona } from '../types';
+import { StarIcon } from './icons/StarIcon';
+import Badge from './ui/Badge';
 
 interface PersonaCardProps {
   persona: Persona;
+  isFavorite: boolean;
+  onToggleFavorite: (personaId: string) => void;
 }
 
-const PersonaCard: React.FC<PersonaCardProps> = ({ persona }) => {
-  const difficultyColor = 
-    persona.difficulty === 'Easy' ? 'bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-100' :
-    persona.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-700 dark:text-yellow-100' :
-    'bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-100';
+const PersonaCard: React.FC<PersonaCardProps> = ({ persona, isFavorite, onToggleFavorite }) => {
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onToggleFavorite(persona.id);
+  };
 
   return (
-    // Fix: Use ReactRouterDOM.Link
     <ReactRouterDOM.Link 
       to={`/simulation/${persona.id}`} 
-      className="block bg-white dark:bg-neutral-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50"
+      className="block bg-white dark:bg-neutral-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
     >
       <div className="relative">
         <img 
           src={`https://picsum.photos/seed/${persona.imageSeed}/400/200`} 
-          alt={persona.name} 
-          className="w-full h-48 object-cover" 
+          alt={`Portrait of ${persona.name}`}
+          className="w-full h-48 object-cover"
+          loading="lazy"
         />
-        <div className={`absolute top-2 right-2 px-2 py-1 text-xs font-semibold rounded-full ${difficultyColor}`}>
-          {persona.difficulty}
+        <div className="absolute top-2 right-2 flex items-center gap-2">
+          <Badge difficulty={persona.difficulty} />
+          <button
+            onClick={handleFavoriteClick}
+            className="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-white/80 dark:bg-neutral-800/80 hover:bg-white dark:hover:bg-neutral-800 transition-colors"
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <StarIcon className={`w-5 h-5 ${isFavorite ? 'text-yellow-500 fill-current' : 'text-neutral-400'}`} />
+          </button>
         </div>
       </div>
       <div className="p-5">
@@ -48,4 +58,4 @@ const PersonaCard: React.FC<PersonaCardProps> = ({ persona }) => {
   );
 };
 
-export default PersonaCard;
+export default memo(PersonaCard);

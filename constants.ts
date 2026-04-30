@@ -3,7 +3,7 @@ import { Persona } from './types';
 
 export const API_KEY_ERROR_MESSAGE = "API_KEY environment variable not set. Please ensure it's configured for Gemini API access.";
 
-export const GEMINI_MODEL_TEXT = 'gemini-2.5-flash-preview-04-17';
+export const GEMINI_MODEL_TEXT = 'gemini-2.5-flash';
 
 export const PERSONAS: Persona[] = [
   // Existing Personas with added category
